@@ -1,0 +1,8 @@
+/*eslint no-underscore-dangle: ["error", { "allow": ["foo_", "_bar"] }]*/
+{
+  "rules": {
+    "no-underscore-dangle": ["error", { "allow": ["_id"]}],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }]
+  },
+  "extends": "airbnb-base"
+}

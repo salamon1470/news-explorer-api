@@ -6,9 +6,9 @@ const cors = require('cors');
 
 const allowedCors = [
   'localhost:3000',
-  'http://api.aroundussg.students.nomoreparties.sbs',
-  'http://www.aroundussg.students.nomoreparties.sbs',
-  'http://aroundussg.students.nomoreparties.sbs'
+  'http://api.finalnewssg.students.nomoreparties.sbs',
+  'http://www.finalnewssg.students.nomoreparties.sbs',
+  'http://finalnewssg.students.nomoreparties.sbs'
 ];
 
 const limiter = rateLimit({
@@ -17,7 +17,8 @@ const limiter = rateLimit({
 });
 
 const {
-  login
+  login,
+  createUser
 } = require('./controllers/users');
 
 const { usersRouter } = require('./routes/users');
@@ -27,7 +28,7 @@ const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { celebrate, Joi } = require('celebrate');
-const { validateURL } = require('../middlewares/urlValidator');
+const { validateURL } = require('./middlewares/urlValidator');
 const NotFoundError = require('./errors/not-found-err');
 const NotAuthorizedError = require('./errors/not-authorized-err');
 
@@ -52,14 +53,15 @@ app.post('/signin',celebrate({
   body: Joi.object().keys({
      email: Joi.string().email(),
       password: Joi.string().required().min(8),
-      avatar: Joi.string().required().custom(validateURL)
+      name: Joi.string().required()
   })
  }), login);
+
 app.post('/signup',celebrate({
   body: Joi.object().keys({
      email: Joi.string().email(),
       password: Joi.string().required().min(8),
-      avatar: Joi.string().required().custom(validateURL)
+      name: Joi.string().required()
   })
  }), createUser);
 

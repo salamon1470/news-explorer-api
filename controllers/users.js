@@ -51,7 +51,10 @@ module.exports.createUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+
+
+
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -61,8 +64,7 @@ module.exports.login = (req, res) => {
       })
     })
     .catch((err) => {
-      throw new NotAuthenticatedError('Incorrect email or password');
+	  throw new NotAuthenticatedError('Incorrect email or password');
     })
-    .catch(next);
+   .catch(next);
 };
-

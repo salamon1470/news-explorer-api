@@ -36,6 +36,11 @@ app.use(helmet());
 app.use(limiter);
 app.use(cors());
 app.options('*', cors());
+const { MONGO, PORT = 3000 } = process.env;
+app.listen(PORT, () => {
+  console.log(`App listening at port ${PORT}`);
+});
+
 app.use(function(req, res, next) {
   const { origin } = req.headers;
   if (allowedCors.includes(origin)) {
@@ -44,7 +49,7 @@ app.use(function(req, res, next) {
 next()
 })
 
-mongoose.connect('mongodb://localhost:27017/finalprojectdb');
+mongoose.connect(MONGO);
 app.use(express.json());
 app.use(bodyparser.json());
 app.use(requestLogger);
@@ -88,7 +93,7 @@ app.use((req, res) => {
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
+  const { statusCode = 500 , message } = err;
   res
     .status(statusCode)
     .send({
@@ -97,9 +102,4 @@ app.use((err, req, res, next) => {
         : message
     });
     next()
-});
-
-const { PORT = 3000 } = process.env;
-app.listen(PORT, () => {
-  console.log(`App listening at port ${PORT}`);
 });

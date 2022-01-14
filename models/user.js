@@ -40,9 +40,7 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials (email
       if (!user) {
         return Promise.reject(new Error('Incorrect email or password'));
       }
-console.log('the password', password);
-console.log('hashed password', user.password);
-   bcrypt.compare(password, user.password)
+    return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new Error('Incorrect email or password'));

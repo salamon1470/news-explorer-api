@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    default: 'Jacques Cousteau',
     minlength: 2,
     maxlength: 30,
     validate: {
@@ -40,9 +40,9 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials (email
       if (!user) {
         return Promise.reject(new Error('Incorrect email or password'));
       }
-
-
-      return bcrypt.compare(password, user.password)
+console.log('the password', password);
+console.log('hashed password', user.password);
+   bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new Error('Incorrect email or password'));

@@ -1,6 +1,7 @@
 const articlesRouter = require('express').Router();
 const { getArticles, createArticle, delArticle} = require('../controllers/articles');
 const { celebrate, Joi } = require('celebrate');
+const { validateURL } = require('../middlewares/urlValidator');
 
 articlesRouter.get('/articles', getArticles);
 

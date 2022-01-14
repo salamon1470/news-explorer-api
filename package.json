@@ -20,6 +20,8 @@
   "homepage": "https://github.com/salamon1470/news-explorer-api#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.1",
     "celebrate": "^15.0.0",
     "cors": "^2.8.5",
     "dotenv": "^11.0.0",

@@ -1,10 +1,12 @@
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const NotValidError = require('../errors/not-valid-err');
+const NotAuthenticatedError= require('../errors/not-authenticated-err');
+const ConflictError = require('../errors/conflict-err');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUser = (req, res, next) => {
   const {email, name} = req.body
@@ -32,9 +34,12 @@ module.exports.getUser = (req, res, next) => {
 module.exports.createUser = (req, res, next) => {
   const { name, email } = req.body;
   bcrypt.hash(req.body.password, 10)
-    .then((res) => User.create({ name, email })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((hash) => User.create({ name, email, password: hash }))
+    .then((user) => res.status(201).send( { data: {name: user.name, email: user.email, _id: user._id, __v: user.__v} } ))
     .catch((err) => {
+      if (err.name === 'CastError') {
+        throw new NotValidError('Invalid user data');
+      }
       if (err.name === 'ValidationError') {
         throw new NotValidError(err.message);
       }
@@ -42,8 +47,8 @@ module.exports.createUser = (req, res, next) => {
         throw new ConflictError('User already exists');
       }
     })
-    .catch(next)
-    )
+    
+    .catch(next);
 };
 
 module.exports.login = (req, res) => {
@@ -56,7 +61,8 @@ module.exports.login = (req, res) => {
       })
     })
     .catch((err) => {
-      throw new NotAuthenticatedError(err.message);
+      throw new NotAuthenticatedError('Incorrect email or password');
     })
+    .catch(next);
 };
 

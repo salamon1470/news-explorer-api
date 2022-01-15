@@ -2,6 +2,7 @@ const Article = require('../models/article');
 const NotFoundError = require('../errors/not-found-err');
 const NotValidError = require('../errors/not-valid-err');
 
+
 module.exports.getArticles = (req, res, next) => {
   Article.find({})
     .orFail()
@@ -16,12 +17,20 @@ module.exports.getArticles = (req, res, next) => {
 
 module.exports.createArticle = (req, res, next) => {
   const {
-    keyword, title, text, date, source, link, image
-  } = req.body;
+    keyword, title, text, date, source, link, image} = req.body;
   Article.create({
-    keyword, title, text, date, source, link, image
+    keyword, title, text, date, source, link, image, owner: req.user._id
   })
-    .then((article) => res.send({ data: article }))
+    .then((article) => res.send({ data:{
+      keyword: article.keyword,
+      title: article.title,
+      text: article.text,
+       date: article.date,
+       source: article.source,
+       link: article.link,
+       image: article.image,
+       _id: article._id,
+       __v: article.__v } }))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new NotValidError('Invalid article data');
@@ -34,7 +43,7 @@ module.exports.createArticle = (req, res, next) => {
 };
 
 module.exports.delArticle = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.articleId)
+  Article.findByIdAndRemove(req.params.articleId)
     .orFail()
     .then((article) => {
          res.send({ data: article })

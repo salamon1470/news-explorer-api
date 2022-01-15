@@ -9,13 +9,12 @@ require('dotenv').config();
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUser = (req, res, next) => {
+
   const {email, name} = req.body
-  User.find(email, name)
+  User.find({email, name})
     .orFail()
     .then((user) => {
-      if(email === res.data.email.toString() & name === res.data.name.toString()) {
-      res.send({ data: user })
-    }
+      res.send( {data: user })
   })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -35,7 +34,8 @@ module.exports.createUser = (req, res, next) => {
   const { name, email } = req.body;
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({ name, email, password: hash }))
-    .then((user) => res.status(201).send( { data: {name: user.name, email: user.email, _id: user._id, __v: user.__v} } ))
+    .then((user) =>
+    res.status(201).send({data: {name: user.name, email: user.email, _id: user._id, __v: user.__v}} ))
     .catch((err) => {
       if (err.name === 'CastError') {
         throw new NotValidError('Invalid user data');
@@ -47,7 +47,7 @@ module.exports.createUser = (req, res, next) => {
         throw new ConflictError('User already exists');
       }
     })
-    
+
     .catch(next);
 };
 
@@ -57,10 +57,12 @@ module.exports.createUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
+    const token = jwt.sign({ _id: user._id },  NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', {expiresIn: '7d'});
     res.send({
-      token: jwt.sign({ _id: user._id },  NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', {expiresIn: '7d'})
+      token
       })
     })
     .catch((err) => {

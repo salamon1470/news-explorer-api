@@ -23,7 +23,6 @@ const {
 
 const { usersRouter } = require('./routes/users');
 const { articlesRouter } = require('./routes/articles');
-const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
@@ -36,7 +35,7 @@ app.use(helmet());
 app.use(limiter);
 app.use(cors());
 app.options('*', cors());
-const { MONGO, PORT = 3000 } = process.env;
+const { MONGO='mongodb://localhost:27017/finalprojectdb', PORT = 3000 } = process.env;
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
 });
@@ -53,6 +52,7 @@ mongoose.connect(MONGO);
 app.use(express.json());
 app.use(bodyparser.json());
 app.use(requestLogger);
+
 app.post('/signin', celebrate({
   body: Joi.object().keys({
      email: Joi.string().email(),
@@ -67,21 +67,9 @@ app.post('/signup', celebrate({
   })
  }), createUser);
 
-app.use('/',(req, res, next) => {
-  if(!auth) {
-    throw new NotAuthorizedError('User is unauthorized')
-  }
-  auth
-  next();
-}, usersRouter);
+app.use('/', usersRouter);
 
-app.use('/',(req, res, next) => {
-  if(!auth) {
-    throw new NotAuthorizedError('User is unauthorized')
-  }
-  auth
-  next();
-}, articlesRouter);
+app.use('/', articlesRouter);
 
 app.use(errorLogger);
 

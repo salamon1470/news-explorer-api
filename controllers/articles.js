@@ -3,7 +3,6 @@ const NotFoundError = require('../errors/not-found-err');
 const NotValidError = require('../errors/not-valid-err');
 const NotAuthorizedError = require('../errors/not-authorized-err');
 
-
 module.exports.getArticles = (req, res, next) => {
   Article.find({})
     .orFail()
@@ -50,45 +49,44 @@ module.exports.createArticle = (req, res, next) => {
 module.exports.delArticle = (req, res, next) => {
   Article.findById(req.params.articleId)
     .orFail()
-    .then((article) => {
-      const isOwn = req.user._id === article.owner._id.toString()
-        Article.findByIdAndRemove(req.params.articleId, isOwn)
-          .orFail()
-          .then((article) => {
-              res.send({
-                data: {
-                  keyword: article.keyword,
-                  title: article.title,
-                  text: article.text,
-                  date: article.date,
-                  source: article.source,
-                  link: article.link,
-                  image: article.image,
-                  _id: article._id,
-                  __v: article.__v,
-                },
-              })
-          })
-          .catch((err) => {
-            if (err.name === 'CastError') {
-              throw new NotValidError('Invalid article data');
-            }
-            if (err.name === 'ValidationError') {
-              throw new NotValidError('Invalid article data');
-            }
-            if (err.name === 'DocumentNotFoundError') {
-              throw new NotFoundError('Article not found');
-            }
-          })
-          .catch(next);
+    .then((art) => {
+      const isOwn = req.user._id === art.owner._id.toString();
+      Article.findByIdAndRemove(req.params.articleId, isOwn)
+        .orFail()
+        .then((article) => {
+          res.send({
+            data: {
+              keyword: article.keyword,
+              title: article.title,
+              text: article.text,
+              date: article.date,
+              source: article.source,
+              link: article.link,
+              image: article.image,
+              _id: article._id,
+              __v: article.__v,
+            },
+          });
+        })
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            throw new NotValidError('Invalid article data');
+          }
+          if (err.name === 'ValidationError') {
+            throw new NotValidError('Invalid article data');
+          }
+          if (err.name === 'DocumentNotFoundError') {
+            throw new NotFoundError('Article not found');
+          }
+        })
+        .catch(next);
+    })
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        throw new NotFoundError('Article not found');
+      }
+      throw new NotAuthorizedError('User not authorized');
+    })
 
-          })
-          .catch((err) => {
-            if (err.name === 'DocumentNotFoundError') {
-              throw new NotFoundError('Article not found');
-            }
-            throw new NotAuthorizedError('User not authorized');
-          })
-
-          .catch(next)
+    .catch(next);
 };

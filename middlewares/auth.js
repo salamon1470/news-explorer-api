@@ -7,7 +7,7 @@ const extractBearerToken = (header) => {
 };
 
 module.exports.authorize = (req, res, next) => {
-  const { authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWUyYTNiNTY3MjIxNTI4OTE1MjZiMmQiLCJpYXQiOjE2NDIyNzQxODEsImV4cCI6MTY0Mjg3ODk4MX0.N9QUcYp1S1AHEBVY5U0EAuh8jg-sAJ2ZCte6SZLzCAU' } = req.headers;
+  const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new NotAuthorizedError('User is unauthorized')
   }

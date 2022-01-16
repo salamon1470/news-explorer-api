@@ -9,12 +9,17 @@ require('dotenv').config();
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getUser = (req, res, next) => {
+  console.log(req.user._id)
 
-  const {email, name} = req.body
-  User.find({email, name})
+  User.findById(req.user._id)
     .orFail()
     .then((user) => {
-      res.send( {data: user })
+      res.send(
+        {
+        data: {
+        name: user.name,
+        email: user.email }
+      })
   })
     .catch((err) => {
       if (err.name === 'CastError') {

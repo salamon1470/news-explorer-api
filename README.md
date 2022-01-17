@@ -38,3 +38,4 @@ This is the API of the News Explorer app.
 ## Domain: 
   
   https://api.finalnewssg.students.nomoreparties.sbs/ 
+

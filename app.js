@@ -10,6 +10,9 @@ const allowedCors = [
   'http://api.finalnewssg.students.nomoreparties.sbs',
   'http://www.finalnewssg.students.nomoreparties.sbs',
   'http://finalnewssg.students.nomoreparties.sbs',
+  'https://api.finalnewssg.students.nomoreparties.sbs',
+  'https://www.finalnewssg.students.nomoreparties.sbs',
+  'https://finalnewssg.students.nomoreparties.sbs',
 ];
 
 const limiter = rateLimit({

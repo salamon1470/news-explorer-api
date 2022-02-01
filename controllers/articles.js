@@ -4,7 +4,7 @@ const NotValidError = require('../errors/not-valid-err');
 const NotAuthorizedError = require('../errors/not-authorized-err');
 
 module.exports.getArticles = (req, res, next) => {
-  Article.find({})
+  Article.find({owner: req.user._id})
     .orFail()
     .then((articles) => res.send({ data: articles }))
     .catch((err) => {
@@ -51,7 +51,10 @@ module.exports.delArticle = (req, res, next) => {
     .orFail()
     .then((art) => {
       const isOwn = req.user._id === art.owner._id.toString();
-      Article.findByIdAndRemove(req.params.articleId, isOwn)
+      if (!isOwn) {
+        throw new NotAuthorizedError('User not authorized');
+      }
+      Article.findByIdAndRemove(req.params.articleId)
         .orFail()
         .then((article) => {
           res.send({
@@ -85,7 +88,8 @@ module.exports.delArticle = (req, res, next) => {
       if (err.name === 'DocumentNotFoundError') {
         throw new NotFoundError('Article not found');
       }
-      throw new NotAuthorizedError('User not authorized');
+	throw new NotAuthorizedError('User not authorized');
+
     })
 
     .catch(next);
